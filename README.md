@@ -35,7 +35,7 @@ e.g.
 
 Assuming that the `_org` completion file has been correctly installed via the `install.sh` script, `org` should be able to provide autocompletion for filenames.
 
-e.g. Assuming that a file *fiction/anime/naruto.org* exists:
+e.g. If a file *fiction/anime/naruto.org* exists, then
 
 `org nar[TAB]` will expand to `org fiction/anime/naruto`
  

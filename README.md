@@ -3,9 +3,9 @@
 
 A tree-like quick-access management tool for your org-mode files. 
 
-[img]<>
+![screen](https://user-images.githubusercontent.com/20641402/30132556-0bd3b016-9351-11e7-8e96-7ba22f21a128.png)
 
-It supports deletion, renaming, syncing, and encryption.
+Supports: moving, deletion, renaming, syncing, and encryption.
 
 ### Installation
 

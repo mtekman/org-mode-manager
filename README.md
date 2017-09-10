@@ -23,7 +23,7 @@ e.g.
  | `org` | provides a tree of current org-mode files at the user-set root directory |
  | `org naruto` | creates or opens an org-mode file called *naruto.org* at the root directory |
  | `org fiction/anime/naruto` | creates or opens an org-mode file called *naruto.org* within the nested subdirectory *fiction/anime/* |
- | `org --subdir=fiction/anime` | provides a tree of current org-mode files in the subdirectory *fiction/anime/* |
+ | `org fiction/anime` | provides a tree of current org-mode files in the subdirectory *fiction/anime/* |
  | `org naruto --delete` | deletes file (moves it to `/tmp`) |
  | `org naruto --move=fiction/anime/boruto` | moves file *naruto.org* into subdirectory *fiction/anime/* and renames it *boruto.org* |
  | `org naruto --encrypt` | encrypts the existing file *naruto.org* using `aes-256-cbc` openssl encryption and renames it `naruto.crypt.org` |

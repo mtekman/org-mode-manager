@@ -6,7 +6,8 @@ _org(){
 	local f_dirname=~/.config/org_notes.location
 	touch $f_dirname
 	
-	local f_dir=$(cat $f_dirname)
+	local f_dir=$(grep "^location" $f_dirname | sed -r 's|^location\s*=\s*(.*)\s*|\1|' )
+
 	if [ "$f_dir" = "" ]; then
 	   echo -e "-> No location set in $f_dirname"
 	   return -1

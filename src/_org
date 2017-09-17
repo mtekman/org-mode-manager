@@ -1,42 +1,126 @@
 #compdef org
 
-_org(){
-	local state
-
-	local f_dirname=~/.config/org_notes.conf
-	touch $f_dirname
-	
-	local f_dir=$(grep "^location" $f_dirname | sed -r 's|^location\s*=\s*(.*)\s*|\1|' )
-
-	if [ "$f_dir" = "" ] || ! [ -d $f_dir ]; then
-	   echo -e "-> No valid location set in $f_dirname"
-	   return -1
-	fi
-
-	local f_dir=$(readlink -f $f_dir)
-
-	_arguments \
-	   '1: :->org_files'\
-	   '*: :->args'
-
-	### Attempt to make org print out everything at a subdirectory by tabbing a suggestion, one subdir (depth 1) at a time
-	#local dirs_at_loc=$(find ${f_dir} -maxdepth 1 -type d);
-	#local files_at_loc=$(find ${f_dir} -type f -name '*.org' | sed "s|^${f_dir}/||" | sed "s|.org$||")
-
-	#case $state in
-	#      (org_files)
-	#            _arguments "1:files:($files_at_loc $dirs_at_loc)";
-	#            org --subdir=${org_files}
-	#	    return 0
-	#	    ;;
-       	#esac
-
-	local all=$(find ${f_dir} -type f -name '*.org' | sed "s|^${f_dir}/||" | sed "s|.org$||")
-
-	case $state in
-	     (org_files) _arguments "1:files:($all)" ;;
-	esac
-
+_org_action_files(){
+    find ${f_dir} -type f -name '*.org'\
+	| sed "s|${f_dir}||"
+    #	| sed "s|.org$||"    
 }
+
+_org_action_dirs(){
+    find ${f_dir} -type f -name '*.org' -exec dirname {} \;\
+	| sort | uniq\
+	| sed "s|${f_dir}||"
+}
+
+_org_action_move(){
+    _org_action_dirs
+}
+
+
+_org(){   
+    local state
+
+    local f_dirname=~/.config/org_notes.conf
+    touch $f_dirname
+    
+    local f_dir=$(grep "^location" $f_dirname\
+		      | sed -r 's|^location\s*=\s*(.*)\s*|\1|' )
+
+    if [ "$f_dir" = "" ] || ! [ -d $f_dir ]; then
+	_message "-> No valid location set in $f_dirname"
+	return -1
+    fi
+
+    # Non-specific to encryption
+    _org_filecommands=(
+	'--delete:Delete file'
+	'--move=:Move file to new destination'
+    )
+    
+    # State must be set first for other word completions to function...
+
+    shift words;
+    
+    if [ ${#words} -gt 2 ]; then
+	return 0
+    fi
+
+    
+    case $words[1] in
+	-*)
+	    # Show Switches
+	    local -a switches
+	    switches=(
+		'--sync:Sync directories'
+	        '--help:Show usage'
+		'--create-config:Create a config file'
+		'--all:Show all files in root directory'
+	    )
+	    _describe 'switches' switches
+	    return 0
+	    ;;
+
+	*)
+	    # Files or Directory
+	    local -a orgfiles;
+	    orgfiles=($(_org_action_files))
+	    #_multi_parts / orgfiles
+	    _values 'params' $orgfiles
+	    ;;
+    esac
+
+
+    case $words[2] in
+
+	--move=*)
+	    _values 'params' ( '--move=123' '--move=345' '--move=5678' '--move=1231' )
+	    return 0
+	    ;;
+
+	-*)
+	    # Refer back to first argument for type of switches
+	    # that 2nd arg can offer
+	    #
+	    case $words[1] in		
+		# Encrypted file
+		*.crypt.org)
+		    local -a cryptswitches
+		    cryptswitches=(
+			"${_org_filecommands[@]}"
+			"--decrypt:Decrypt an org-mode file"
+		    )
+		    _describe 'values' cryptswitches
+		    return 0
+		    ;;
+		
+		# Unencrypted file
+		*.org)
+		    local -a regswitches
+		    regswitches=(
+			"${_org_filecommands[@]}"
+			"--encrypt:Encrypt an org-mode file"
+		    )
+		    _describe 'values' regswitches
+		    return 0
+		    ;;
+		
+		# Directory
+		*)
+		    local -a allswitch;
+		    allswitch=( '--all:Show not just org-mode files' )
+		    _describe 'values' allswitch
+		    return 0
+		    ;;
+	    esac
+	    return 0
+	    ;;
+
+	[A-Za-z0-9]*)
+	    return 0
+	    ;;
+    esac
+}
+
+    
 
 _org "$@"

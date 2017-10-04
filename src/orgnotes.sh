@@ -183,11 +183,13 @@ EOF
 	[ "$command" = "--all" ] && file_filter=""
 	
 	local root_dir=${org_dir}/${sub_dirtree}
+
+	local height=`stty size | awk '{print $1}'`
 	
 	[ "$org_maxnest" = "" ] && org_maxnest=10
-	[ "$org_maxlist" = "" ] && org_maxlist=1000
+	[ "$org_maxlist" = "" ] && org_maxlist=$height
 
-	org_maxlist=$(( $org_maxlist + 3 )) # offset: top two lines are text, and bottom blank
+	org_maxlist=$(( $org_maxlist - 5 )) # offset: top two lines are text, and bottom blank
 	
 	local output=`eval tree -CD ${file_filter} -rt ${root_dir} -L ${org_maxnest}\
 	    | sed "s|${root_dir}|\n${title}\n|"\
@@ -195,9 +197,13 @@ EOF
 	    | sed 's/.org//'`
 
 	# Print the tree, blank, and then report
+	local num_items=$(echo -e "$output" | wc -l)
+	
 	echo -e "$output" | head -n -1 | head -${org_maxlist}
 	echo ""
 	echo -e "$output" | tail -1
+
+	[ $height -lt $num_items ] && echo "[truncated]"
 
 	return -1;
     fi

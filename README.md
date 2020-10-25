@@ -1,6 +1,14 @@
 
 # org-mode-manager
 
+### This repo has migrated to GitLab
+https://gitlab.com/mtekman/org-mode-manager
+###### (The copy here is archived. Please see the above link for the latest developments)
+
+********
+
+
+
 A tree-like quick-access management tool for your org-mode files. 
 
 ![screen](https://user-images.githubusercontent.com/20641402/30132556-0bd3b016-9351-11e7-8e96-7ba22f21a128.png)
